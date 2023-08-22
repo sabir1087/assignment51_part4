@@ -1,0 +1,70 @@
+VOTING APP
+
+Voting App is installationed successfully
+ 
+observations:
+
+ 
+
+1. all microservices pods created successfully
+
+ 
+
+[root@ip-172-31-27-135 k8s-specifications]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-g5756        1/1     Running   0          13s
+redis-868d64d78-c2qnh     1/1     Running   0          12s
+result-5d57b59f4b-54mpk   1/1     Running   0          12s
+vote-94849dc97-6zrsw      1/1     Running   0          12s
+worker-dd46d7584-v6v2w    1/1     Running   0          12s
+
+ 
+
+2. NodePort assigned to voting pod and result app
+
+ 
+
+redis        ClusterIP   10.108.203.11   <none>        6379/TCP         21m
+result       NodePort    10.96.0.125     <none>        5001:31001/TCP   21m
+vote         NodePort    10.109.175.88   <none>        5000:31000/TCP   21m
+[root@ip-172-31-27-135 k8s-specifications]#
+
+ 
+
+2. able to access voting and result application in browser. we can do voting and  same result can be seen in result screen
+
+ 
+
+3. deleted voting app:
+  ==> No changes observed
+  ==> image pulled from docker hub
+        Normal  Pulling    94s   kubelet, ip-172-31-27-135.ap-southeast-1.compute.internal  Pulling image "dockersamples/examplevotingapp_worker"
+  Normal  Pulled     92s   kubelet, ip-172-31-27-135.ap-southeast-1.compute.internal  Successfully pulled image "dockersamples/examplevotingapp_worker"
+
+ 
+
+3.  redis pod and db pod restarted obesrved below points:
+   a. worker pod container and result pod containers restarted
+   b.result GUI shown no vote yet.. means voting data has lost
+   root@ip-172-31-27-135 k8s-specifications]# kubectl get pods -o wide
+NAME                      READY   STATUS    RESTARTS   AGE     IP               NODE                                               NOMINATED NODE   READINESS GATES
+db-b54cd94f4-bwmhm        1/1     Running   0          92s     192.168.112.75   ip-172-31-27-135.ap-southeast-1.compute.internal   <none>           <none>
+redis-868d64d78-4przs     1/1     Running   0          92s     192.168.112.79   ip-172-31-27-135.ap-southeast-1.compute.internal   <none>           <none>
+result-5d57b59f4b-54mpk   1/1     Running   3          14m     192.168.112.68   ip-172-31-27-135.ap-southeast-1.compute.internal   <none>           <none>
+vote-94849dc97-qwh4f      1/1     Running   0          7m35s   192.168.112.71   ip-172-31-27-135.ap-southeast-1.compute.internal   <none>           <none>
+worker-dd46d7584-v6v2w    1/1     Running   3          14m     192.168.11
+
+ 
+
+result app also stopped when db pod deleted .. bcz connection between db and result app has lost.
+
+ 
+
+4. after db pod restart ..image pulled from locall copy
+
+ 
+
+nternal
+  Normal  Pulled     5m1s  kubelet, ip-172-31-27-135.ap-southeast-1.compute.internal  Container image "postgres:9.3" already present on machine
+  Normal  Created    5m1s  kubelet, ip-172-31-27-135.ap-southeast-1.compute.internal  Created container db
+  Normal  Started    5m1s  kubelet, ip-172-31-27-135.ap-southeast-1.compute.internal  Started container db
